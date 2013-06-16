@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import unicopa.copa.Main;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.request.GetSingleEventRequest;
@@ -79,11 +78,11 @@ public class SimpleHttpsClientTest {
 
     @After
     public void tearDown() {
-	try {
-	    httpsClient.stop();
-	} catch (Exception ex) {
-	    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-	}
+        try {
+            httpsClient.stop();
+        } catch (Exception ex) {
+            Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Test
@@ -146,11 +145,11 @@ public class SimpleHttpsClientTest {
 	try {
 	    return httpsClient.sendRequest(request);
 	} catch (InterruptedException ex) {
-	    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
 	} catch (TimeoutException ex) {
-	    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
 	} catch (ExecutionException ex) {
-	    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
 	} catch (APIException ex) {
 	    System.out.println("Exception from server: " + ex.getMessage());
 	} catch (PermissionException ex) {
