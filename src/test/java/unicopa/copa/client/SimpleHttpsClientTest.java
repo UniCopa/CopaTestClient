@@ -40,6 +40,8 @@ import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
 import unicopa.copa.base.com.request.AddSingleEventRequest;
 import unicopa.copa.base.com.request.AddSingleEventResponse;
+import unicopa.copa.base.com.request.AddSingleEventUpdateRequest;
+import unicopa.copa.base.com.request.AddSingleEventUpdateResponse;
 import unicopa.copa.base.com.request.CancelSingleEventRequest;
 import unicopa.copa.base.com.request.GetCategoriesRequest;
 import unicopa.copa.base.com.request.GetCategoriesResponse;
@@ -78,11 +80,12 @@ public class SimpleHttpsClientTest {
 
     @After
     public void tearDown() {
-        try {
-            httpsClient.stop();
-        } catch (Exception ex) {
-            Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+	try {
+	    httpsClient.stop();
+	} catch (Exception ex) {
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	}
     }
 
     @Test
@@ -103,7 +106,7 @@ public class SimpleHttpsClientTest {
 	doRequest(new GetSingleEventRequest(-3));
 
 	GetSingleEventResponse response = (GetSingleEventResponse) doRequest(new GetSingleEventRequest(
-		7));
+		18));
 	SingleEvent sev = response.getSingleEvent();
 	System.out.println("Received SingleEvent: DATE="
 		+ (sev == null ? null : sev.getDate()) + " ROOM="
@@ -112,7 +115,7 @@ public class SimpleHttpsClientTest {
 
     @Test
     public void testGetCurrentSingleEventsRequest() {
-	doRequest(new GetCurrentSingleEventsRequest(3, new Date(2000)));
+	doRequest(new GetCurrentSingleEventsRequest(2, new Date(2000)));
     }
 
     @Test
@@ -126,8 +129,22 @@ public class SimpleHttpsClientTest {
     }
 
     @Test
-    public void testCancelSingleEventRequest() {
-	doRequest(new CancelSingleEventRequest(7, "cancelled by CopaTestClient"));
+    public void testAddSingleEventUpdateRequest() throws ParseException {
+	SingleEvent s = new SingleEvent(18, 2, "room Z",
+		sdf.parse("2013-06-30 11:00"), "Supervisor K", 30);
+	AddSingleEventUpdateResponse response = (AddSingleEventUpdateResponse) doRequest(new AddSingleEventUpdateRequest(
+		s, "Changed something!"));
+	System.out.println("Resulting ID: " + response.getSingleEventID());
+    }
+
+    @Test
+    public void testCancelSingleEventRequest() throws ParseException {
+	SingleEvent s = new SingleEvent(18, 2, "Space",
+		sdf.parse("2013-06-30 11:00"), "Supervisor? No.", 30);
+	AddSingleEventResponse response = (AddSingleEventResponse) doRequest(new AddSingleEventRequest(
+		s, "This SingleEvent will only exist for a blink..."));
+	doRequest(new CancelSingleEventRequest(response.getSingleEventID(),
+		"cancelled by CopaTestClient"));
     }
 
     @Test
@@ -145,11 +162,14 @@ public class SimpleHttpsClientTest {
 	try {
 	    return httpsClient.sendRequest(request);
 	} catch (InterruptedException ex) {
-	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(
+		    Level.SEVERE, null, ex);
 	} catch (TimeoutException ex) {
-	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(
+		    Level.SEVERE, null, ex);
 	} catch (ExecutionException ex) {
-	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(SimpleHttpsClientTest.class.getName()).log(
+		    Level.SEVERE, null, ex);
 	} catch (APIException ex) {
 	    System.out.println("Exception from server: " + ex.getMessage());
 	} catch (PermissionException ex) {
