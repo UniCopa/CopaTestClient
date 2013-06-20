@@ -30,6 +30,8 @@ import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import unicopa.copa.base.UserEventSettings;
+import unicopa.copa.base.UserSettings;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.request.GetSingleEventRequest;
@@ -43,6 +45,7 @@ import unicopa.copa.base.com.request.AddSingleEventResponse;
 import unicopa.copa.base.com.request.AddSingleEventUpdateRequest;
 import unicopa.copa.base.com.request.AddSingleEventUpdateResponse;
 import unicopa.copa.base.com.request.CancelSingleEventRequest;
+import unicopa.copa.base.com.request.GetAllOwnersRequest;
 import unicopa.copa.base.com.request.GetCategoriesRequest;
 import unicopa.copa.base.com.request.GetCategoriesResponse;
 import unicopa.copa.base.com.request.GetCurrentSingleEventsRequest;
@@ -50,6 +53,10 @@ import unicopa.copa.base.com.request.GetEventGroupRequest;
 import unicopa.copa.base.com.request.GetEventGroupsRequest;
 import unicopa.copa.base.com.request.GetEventGroupsResponse;
 import unicopa.copa.base.com.request.GetEventRequest;
+import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
+import unicopa.copa.base.com.request.GetUserSettingsRequest;
+import unicopa.copa.base.com.request.GetUserSettingsResponse;
+import unicopa.copa.base.com.request.SetUserSettingsRequest;
 import unicopa.copa.base.event.SingleEvent;
 
 /**
@@ -101,9 +108,9 @@ public class SimpleHttpsClientTest {
     @Test
     public void testGetSingleEventRequest() {
 
-	doRequest(new GetSingleEventRequest(42));
-	doRequest(new GetSingleEventRequest(0));
-	doRequest(new GetSingleEventRequest(-3));
+	doRequest(new GetSingleEventRequest(19));
+	doRequest(new GetSingleEventRequest(20));
+	doRequest(new GetSingleEventRequest(3));
 
 	GetSingleEventResponse response = (GetSingleEventResponse) doRequest(new GetSingleEventRequest(
 		18));
@@ -130,8 +137,8 @@ public class SimpleHttpsClientTest {
 
     @Test
     public void testAddSingleEventUpdateRequest() throws ParseException {
-	SingleEvent s = new SingleEvent(18, 2, "room Z",
-		sdf.parse("2013-06-30 11:00"), "Supervisor K", 30);
+	SingleEvent s = new SingleEvent(5, 2, "room Zzz..", new Date(),
+		"Supervisor K", 30);
 	AddSingleEventUpdateResponse response = (AddSingleEventUpdateResponse) doRequest(new AddSingleEventUpdateRequest(
 		s, "Changed something!"));
 	System.out.println("Resulting ID: " + response.getSingleEventID());
@@ -139,11 +146,17 @@ public class SimpleHttpsClientTest {
 
     @Test
     public void testCancelSingleEventRequest() throws ParseException {
-	SingleEvent s = new SingleEvent(18, 2, "Space",
+	SingleEvent s = new SingleEvent(37, 2, "Space",
 		sdf.parse("2013-06-30 11:00"), "Supervisor? No.", 30);
 	AddSingleEventResponse response = (AddSingleEventResponse) doRequest(new AddSingleEventRequest(
 		s, "This SingleEvent will only exist for a blink..."));
 	doRequest(new CancelSingleEventRequest(response.getSingleEventID(),
+		"cancelled by CopaTestClient"));
+    }
+
+    @Test
+    public void testCancelSingleEventRequestAgain() {
+	doRequest(new CancelSingleEventRequest(37,
 		"cancelled by CopaTestClient"));
     }
 
@@ -153,9 +166,37 @@ public class SimpleHttpsClientTest {
     }
 
     @Test
+    public void testGetSingleEventUpdatesRequest() {
+	doRequest(new GetSingleEventUpdatesRequest(2, new Date(0)));
+	doRequest(new GetSingleEventUpdatesRequest(3, new Date(0)));
+    }
+
+    @Test
     public void testGetEventGroupsRequest() {
 	GetEventGroupsResponse response = (GetEventGroupsResponse) doRequest(new GetEventGroupsRequest(
 		7, null));
+    }
+
+    @Test
+    public void testGetUserSettingsRequest() {
+	GetUserSettingsResponse response = (GetUserSettingsResponse) doRequest(new GetUserSettingsRequest());
+	UserSettings settings = response.getUserSettings();
+	settings.addGCMKey("TestClientKey");
+	settings.putEventSettings(3, new UserEventSettings(new Date()
+		.toString().substring(10, 16)));
+	doRequest(new SetUserSettingsRequest(settings));
+    }
+
+    @Test
+    public void testSetUserSettingsRequest() {
+	UserSettings settings = new UserSettings();
+	settings.addGCMKey("d");
+	doRequest(new SetUserSettingsRequest(settings));
+    }
+
+    @Test
+    public void testGetAllOwnersRequest() {
+	doRequest(new GetAllOwnersRequest(3));
     }
 
     public AbstractResponse doRequest(AbstractRequest request) {
