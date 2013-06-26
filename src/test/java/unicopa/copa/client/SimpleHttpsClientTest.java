@@ -53,7 +53,11 @@ import unicopa.copa.base.com.request.GetEventGroupRequest;
 import unicopa.copa.base.com.request.GetEventGroupsRequest;
 import unicopa.copa.base.com.request.GetEventGroupsResponse;
 import unicopa.copa.base.com.request.GetEventRequest;
+import unicopa.copa.base.com.request.GetMyAppointedUsersRequest;
+import unicopa.copa.base.com.request.GetServerInfoRequest;
+import unicopa.copa.base.com.request.GetServerStatusNotesRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
+import unicopa.copa.base.com.request.GetUserDataRequest;
 import unicopa.copa.base.com.request.GetUserSettingsRequest;
 import unicopa.copa.base.com.request.GetUserSettingsResponse;
 import unicopa.copa.base.com.request.SetUserSettingsRequest;
@@ -195,8 +199,39 @@ public class SimpleHttpsClientTest {
     }
 
     @Test
+    public void testGetUserDataRequest() {
+	System.out.println("Get\"UserData\":");
+	doRequest(new GetUserDataRequest());
+    }
+
+    @Test
     public void testGetAllOwnersRequest() {
 	doRequest(new GetAllOwnersRequest(3));
+    }
+
+    @Test
+    public void testGetMyAppointedUsersRequest() {
+	doRequest(new GetMyAppointedUsersRequest(2));
+    }
+
+    @Test
+    public void testGetServerStatusNotesRequest() {
+	doRequest(new GetServerStatusNotesRequest(new Date(0)));
+    }
+
+    @Test
+    public void testGetServerInfoRequest() {
+	doRequest(new GetServerInfoRequest());
+    }
+
+    /**
+     * Test with quotations marks around numbers.
+     */
+    @Test
+    public void testManualGetCurrentSingleEventsRequest() {
+	System.out
+		.println(httpsClient
+			.sendRequestAsText("{\"type\":\"GetCurrentSingleEventsRequest\",\"data\":{\"eventID\":\"2\",\"since\":{\"millis\":\"2000\"}}}"));
     }
 
     public AbstractResponse doRequest(AbstractRequest request) {

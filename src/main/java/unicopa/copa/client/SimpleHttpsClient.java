@@ -96,6 +96,31 @@ public class SimpleHttpsClient {
 	return AbstractResponse.deserialize(response.getContentAsString());
     }
 
+    /**
+     * Send the request by text, not using automatic serialization. The POST
+     * will contain the "req" parameter with the sepcified text as parameter.
+     * 
+     * @param text
+     * @return the response from the server as text, or null if an exception
+     *         occured
+     */
+    public String sendRequestAsText(String text) {
+	try {
+	    return client.POST(reqURL).param("req", text).send()
+		    .getContentAsString();
+	} catch (InterruptedException ex) {
+	    Logger.getLogger(SimpleHttpsClient.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	} catch (TimeoutException ex) {
+	    Logger.getLogger(SimpleHttpsClient.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	} catch (ExecutionException ex) {
+	    Logger.getLogger(SimpleHttpsClient.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	}
+	return null;
+    }
+
     public void stop() throws Exception {
 	client.stop();
     }
